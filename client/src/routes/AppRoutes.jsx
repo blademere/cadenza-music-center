@@ -41,6 +41,25 @@ import FrontDeskInstrumentRentalsPage from "@/features/front-desk/pages/FrontDes
 import FrontDeskRoomBookings from "@/features/front-desk/pages/FrontDeskRoomBookings";
 import BillingPayments from "@/features/front-desk/pages/FrontDeskBillingPayments";
 
+//Client Pages
+import ClientPageLayout from "@/features/client/layouts/ClientPageLayout";
+import {
+  Enrollments,
+  CreateEnrollment,
+  EnrollmentDetails,
+} from "@/features/client/enrollments";
+import {
+  RoomBookings,
+  CreateRoomBooking,
+  RoomBookingDetails,
+} from "@/features/client/room-bookings";
+import {
+  InstrumentRentals,
+  CreateInstrumentRental,
+  InstrumentRentalDetails,
+} from "@/features/client/instrument-rentals";
+import { ClientBillingPayments, TransactionDetails } from "@/features/client/billing";
+
 import NotFoundPage from "@/pages/NotFoundPage";
 
 export default function AppRoutes() {
@@ -98,15 +117,58 @@ export default function AppRoutes() {
           <Route path="instructors" element={<FrontDeskInstructorsPage />} />
           <Route path="enrollments" element={<FrontDeskEnrollmentsPage />} />
           <Route path="schedule" element={<FrontDeskClassSchedulePage />} />
-          <Route path="instrument-rentals" element={<FrontDeskInstrumentRentalsPage />} />
+          <Route
+            path="instrument-rentals"
+            element={<FrontDeskInstrumentRentalsPage />}
+          />
           <Route path="room-bookings" element={<FrontDeskRoomBookings />} />
           <Route path="billing" element={<BillingPayments />} />
 
           {/* Front Desk Profile & Notifications */}
           <Route path="profile" element={<FrontDeskProfilePage />} />
-          <Route path="notifications" element={<FrontDeskNotificationsPage />} />
+          <Route
+            path="notifications"
+            element={<FrontDeskNotificationsPage />}
+          />
 
           <Route path="settings" element={<SettingsPage />} />
+        </Route>
+      </Route>
+
+      {/* Client */}
+      <Route element={<AuthenticatedLayout />}>
+        <Route path="client" element={<ClientPageLayout />}>
+          <Route index element={<CreateEnrollment />} />
+
+          <Route path="profile" element={<CreateEnrollment />} />
+
+          <Route path="enrollments" element={<Enrollments />} />
+
+          <Route path="enrollments/new" element={<CreateEnrollment />} />
+
+          <Route path="enrollments/:id" element={<EnrollmentDetails />} />
+
+          <Route path="room-bookings" element={<RoomBookings />} />
+
+          <Route path="room-bookings/new" element={<CreateRoomBooking />} />
+
+          <Route path="room-bookings/:id" element={<RoomBookingDetails />} />
+
+          <Route path="instrument-rentals" element={<InstrumentRentals />} />
+
+          <Route
+            path="instrument-rentals/new"
+            element={<CreateInstrumentRental />}
+          />
+
+          <Route
+            path="instrument-rentals/:id"
+            element={<InstrumentRentalDetails />}
+          />
+
+          <Route path="billing" element={<ClientBillingPayments />} />
+
+          <Route path="billing/:id" element={<TransactionDetails />} />
         </Route>
       </Route>
 
