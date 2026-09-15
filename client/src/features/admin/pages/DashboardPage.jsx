@@ -5,32 +5,39 @@ import { SiteHeader } from "../components/site-header";
 
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 
-import { MusicIcon, UsersIcon } from "lucide-react";
+import { UsersIcon, Guitar, Piano, Drum, Music2 } from "lucide-react";
 
 const courseEnrollments = [
   {
     course: "Piano",
     students: 24,
+    icon: <Piano className="h-5 w-5 text-primary" />,
   },
   {
     course: "Guitar",
     students: 18,
+    icon: <Guitar className="h-5 w-5 text-primary" />,
   },
   {
     course: "Drums",
     students: 12,
+    icon: <Drum className="h-5 w-5 text-primary" />,
   },
   {
     course: "Ukulele",
     students: 10,
+    icon: <Guitar className="h-5 w-5 text-primary" />,
   },
   {
     course: "Violin",
     students: 15,
+    icon: <Music2 className="h-5 w-5 text-primary" />,
   },
+
   {
     course: "Bass Guitar",
     students: 8,
+    icon: <Guitar className="h-5 w-5 text-primary" />,
   },
 ];
 
@@ -157,7 +164,7 @@ export default function DashboardPage() {
                       >
                         <div className="flex items-center gap-3">
                           <div className="rounded-lg bg-primary/10 p-2">
-                            <MusicIcon className="h-5 w-5 text-primary" />
+                            {course.icon}
                           </div>
 
                           <div>

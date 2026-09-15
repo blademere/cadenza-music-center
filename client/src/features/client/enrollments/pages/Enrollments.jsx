@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 import PackageCard from "../components/PackageCard";
@@ -15,15 +14,11 @@ export default function Enrollments() {
 
   const [packages, setPackages] = useState([]);
   const [myEnrollment, setMyEnrollment] = useState(null);
-
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
     async function loadData() {
       try {
-        setLoading(true);
-
         const [availablePackages, enrollment] = await Promise.all([
           getAvailablePackages(),
           getMyEnrollment(),
@@ -34,8 +29,6 @@ export default function Enrollments() {
       } catch (error) {
         console.error(error);
         setError("Unable to load enrollment information.");
-      } finally {
-        setLoading(false);
       }
     }
 
@@ -45,17 +38,6 @@ export default function Enrollments() {
   const handleEnroll = (packageData) => {
     navigate(`/client/enrollments/new?package=${packageData.id}`);
   };
-
-  if (loading) {
-    return (
-      <div className="flex min-h-[400px] items-center justify-center">
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <Loader2 className="h-5 w-5 animate-spin" />
-          Loading packages...
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="space-y-8 px-4 py-6 lg:px-6">
@@ -134,3 +116,4 @@ export default function Enrollments() {
     </div>
   );
 }
+

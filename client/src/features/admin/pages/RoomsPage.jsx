@@ -35,6 +35,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 
 const initialRooms = [
   {
@@ -214,19 +215,42 @@ export default function RoomsPage() {
               </DialogHeader>
 
               <div className="grid gap-2 py-4">
-                <Label htmlFor="room-name">Room Name</Label>
+                <Label className="text-sm text-muted-foreground">
+                  Room Type
+                </Label>
+                <div className="grid gap-2 py-4">
+                  <Label htmlFor="room-name">Room Name</Label>
 
-                <Input
-                  id="room-name"
-                  placeholder="e.g. Room 101"
-                  value={roomName}
-                  onChange={(event) => setRoomName(event.target.value)}
-                  onKeyDown={(event) => {
-                    if (event.key === "Enter") {
-                      saveRoom();
-                    }
-                  }}
-                />
+                  <Input
+                    id="room-name"
+                    placeholder="e.g. Room 101"
+                    value={roomName}
+                    onChange={(event) => setRoomName(event.target.value)}
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter") {
+                        saveRoom();
+                      }
+                    }}
+                  />
+
+                  <Label className="text-sm text-muted-foreground">
+                    Room Type
+                  </Label>
+
+                  <Select >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a room type" />
+                    </SelectTrigger>
+
+                    <SelectContent>
+                      <SelectItem value="Band Room">Band Room</SelectItem>
+
+                      <SelectItem value="Class Session Room">
+                        Class Session Room
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
 
               <DialogFooter>

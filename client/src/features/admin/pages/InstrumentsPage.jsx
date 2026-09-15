@@ -1,21 +1,47 @@
 "use client";
-
-import { PlusIcon, GuitarIcon } from "lucide-react";
+import { useState } from "react";
+import { PlusIcon } from "lucide-react";
 
 import { AppSidebar } from "../components/app-sidebar";
 import { SiteHeader } from "../components/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 
+import {
+  Table,
+  TableBody,
+  TableHeader,
+  TableHead,
+  TableCell,
+  TableRow,
+} from "@/components/ui/table";
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardHeader,
   CardTitle,
+  CardHeader,
+  CardDescription,
 } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { SearchIcon } from "lucide-react";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
+
+import { Label } from "@/components/ui/label";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 const instruments = [
   {
@@ -42,6 +68,42 @@ const instruments = [
 ];
 
 export default function InstrumentsPage() {
+  const [search, setSearch] = useState("");
+  const [category, setCategory] = useState("All Categories");
+  const [showAddDialog, setShowAddDialog] = useState(false);
+
+  const [instrumentName, setInstrumentName] = useState("");
+  const [instrumentType, setInstrumentType] = useState("");
+  const [instrumentCondition, setInstrumentCondition] = useState("Good");
+  const [instrumentStatus, setInstrumentStatus] = useState("Available");
+
+  const filtered = instruments.filter((instrument) => {
+    const matchesSearch = `${instrument.name} ${instrument.type}`
+      .toLowerCase()
+      .includes(search.toLowerCase());
+
+    const matchesCategory =
+      category === "All Categories" || instrument.type === category;
+
+    return matchesSearch && matchesCategory;
+  });
+
+  const handleAddInstrument = () => {
+    console.log({
+      name: instrumentName,
+      type: instrumentType,
+      condition: instrumentCondition,
+      status: instrumentStatus,
+    });
+
+    setShowAddDialog(false);
+
+    setInstrumentName("");
+    setInstrumentType("");
+    setInstrumentCondition("Good");
+    setInstrumentStatus("Available");
+  };
+
   return (
     <SidebarProvider>
       <AppSidebar variant="inset" />
@@ -59,41 +121,141 @@ export default function InstrumentsPage() {
               </p>
             </div>
 
-            <Button>
+            <Button onClick={() => setShowAddDialog(true)}>
               <PlusIcon />
               Add Instrument
             </Button>
           </div>
 
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {instruments.map((instrument) => (
-              <Card key={instrument.id}>
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <GuitarIcon className="size-5 text-muted-foreground" />
+          <Card>
+            <CardHeader>
+              <CardTitle>Instrument List</CardTitle>
 
-                    <Badge>{instrument.status}</Badge>
-                  </div>
+              <CardDescription>
+                All instruments currently registered in the system.
+              </CardDescription>
 
-                  <CardTitle>{instrument.name}</CardTitle>
+              <div className="flex items-center justify-between gap-2 pt-4">
+                <div className="relative max-w-sm flex-1">
+                  <SearchIcon className="absolute left-3 top-2.5 size-4 text-muted-foreground" />
 
-                  <CardDescription>{instrument.type}</CardDescription>
-                </CardHeader>
+                  <Input
+                    className="pl-9"
+                    placeholder="Search instrument..."
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                  />
+                </div>
 
-                <CardContent className="space-y-2 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">ID</span>
-                    <span>{instrument.id}</span>
-                  </div>
+                <Select value={category} onValueChange={setCategory}>
+                  <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="Filter by category..." />
+                  </SelectTrigger>
 
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Condition</span>
-                    <span>{instrument.condition}</span>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                  <SelectContent>
+                    <SelectItem value="All Categories">
+                      All Categories
+                    </SelectItem>
+                    <SelectItem value="Piano">Piano</SelectItem>
+                    <SelectItem value="Guitar">Guitar</SelectItem>
+                    <SelectItem value="Violin">Violin</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </CardHeader>
+
+            <CardContent>
+              <div className="rounded-md border">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Instrument</TableHead>
+                      <TableHead>Category</TableHead>
+                      <TableHead>Condition</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead />
+                    </TableRow>
+                  </TableHeader>
+
+                  <TableBody>
+                    {filtered.map((instruments) => (
+                      <TableRow key={instruments.id}>
+                        <TableCell className="font-medium">
+                          {instruments.name}
+                        </TableCell>
+                        <TableCell>{instruments.type}</TableCell>
+                        <TableCell>{instruments.condition}</TableCell>
+                        <TableCell>{instruments.status}</TableCell>
+
+                        <TableCell></TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </CardContent>
+          </Card>
+          <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
+            <DialogContent className="sm:max-w-[500px]">
+              <DialogHeader>
+                <DialogTitle>Add Instrument</DialogTitle>
+
+                <DialogDescription>
+                  Add a new instrument to the system.
+                </DialogDescription>
+              </DialogHeader>
+
+              <div className="grid gap-5 py-4">
+                {/* Instrument Name */}
+                <div className="grid gap-2">
+                  <Label htmlFor="instrument-name">Instrument Name</Label>
+
+                  <Input
+                    id="instrument-name"
+                    placeholder="e.g. Yamaha Grand Piano"
+                    value={instrumentName}
+                    onChange={(event) => setInstrumentName(event.target.value)}
+                  />
+                </div>
+
+                {/* Category */}
+                <div className="grid gap-2">
+                  <Label>Category</Label>
+
+                  <Select
+                    value={instrumentType}
+                    onValueChange={setInstrumentType}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a category" />
+                    </SelectTrigger>
+
+                    <SelectContent>
+                      <SelectItem value="Piano">Piano</SelectItem>
+                      <SelectItem value="Guitar">Guitar</SelectItem>
+                      <SelectItem value="Violin">Violin</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <DialogFooter>
+                <Button
+                  variant="outline"
+                  onClick={() => setShowAddDialog(false)}
+                >
+                  Cancel
+                </Button>
+
+                <Button
+                  onClick={handleAddInstrument}
+                  disabled={!instrumentName.trim() || !instrumentType}
+                >
+                  Add Instrument
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </main>
       </SidebarInset>
     </SidebarProvider>

@@ -58,7 +58,10 @@ import {
   CreateInstrumentRental,
   InstrumentRentalDetails,
 } from "@/features/client/instrument-rentals";
-import { ClientBillingPayments, TransactionDetails } from "@/features/client/billing";
+import {
+  ClientBillingPayments,
+  TransactionDetails,
+} from "@/features/client/billing";
 
 import NotFoundPage from "@/pages/NotFoundPage";
 

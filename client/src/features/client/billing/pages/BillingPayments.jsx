@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { CreditCard, Loader2 } from "lucide-react";
+import { CreditCard } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 import TransactionCard from "../components/TransactionCard";
@@ -9,22 +9,17 @@ export default function ClientBillingPayments() {
   const navigate = useNavigate();
 
   const [transactions, setTransactions] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
     async function loadTransactions() {
       try {
-        setLoading(true);
-
         const data = await getMyTransactions();
 
         setTransactions(data);
       } catch (error) {
         console.error(error);
         setError("Unable to load your billing information.");
-      } finally {
-        setLoading(false);
       }
     }
 
@@ -34,17 +29,6 @@ export default function ClientBillingPayments() {
   const handleViewTransaction = (transaction) => {
     navigate(`/client/billing/${transaction.id}`);
   };
-
-  if (loading) {
-    return (
-      <div className="flex min-h-[400px] items-center justify-center">
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <Loader2 className="h-5 w-5 animate-spin" />
-          Loading billing information...
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="space-y-8 px-4 py-6 lg:px-6">

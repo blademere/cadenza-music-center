@@ -1,12 +1,11 @@
 "use client";
 
-import { PlusIcon, ClockIcon, DoorOpenIcon } from "lucide-react";
+import { ClockIcon, DoorOpenIcon } from "lucide-react";
 
 import { AppSidebar } from "../components/app-sidebar";
 import { SiteHeader } from "../components/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
 import {
@@ -92,14 +91,10 @@ export default function ClassSchedulePage() {
               </h1>
 
               <p className="text-muted-foreground">
-                Manage class schedules and prevent room conflicts with rentals.
+                View Class and Room Schedules for the Day.
               </p>
             </div>
 
-            <Button>
-              <PlusIcon className="mr-2 h-4 w-4" />
-              Schedule Class
-            </Button>
           </div>
 
           {/* Today's Schedule */}

@@ -1,7 +1,5 @@
-"use client";
-
 import { useState } from "react";
-import {  SearchIcon, MoreHorizontalIcon } from "lucide-react";
+import { SearchIcon } from "lucide-react";
 
 import { AppSidebar } from "../components/app-sidebar";
 import { SiteHeader } from "../components/site-header";
@@ -10,6 +8,7 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+
 import {
   Card,
   CardContent,
@@ -17,6 +16,15 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+
 import {
   Table,
   TableBody,
@@ -58,6 +66,13 @@ const students = [
 
 export default function StudentsPage() {
   const [search, setSearch] = useState("");
+  const [selectedStudent, setSelectedStudent] = useState(null);
+  const [showDetails, setShowDetails] = useState(false);
+
+  const handleViewDetails = (student) => {
+    setSelectedStudent(student);
+    setShowDetails(true);
+  };
 
   const filteredStudents = students.filter((student) =>
     `${student.name} ${student.email} ${student.instrument}`
@@ -85,7 +100,6 @@ export default function StudentsPage() {
                 Manage students registered at Cadenza Music Center.
               </p>
             </div>
-
           </div>
 
           <Card>
@@ -112,32 +126,34 @@ export default function StudentsPage() {
                   <TableHeader>
                     <TableRow>
                       <TableHead>Student</TableHead>
-                      <TableHead>Phone</TableHead>
                       <TableHead>Instrument</TableHead>
                       <TableHead>Instructor</TableHead>
                       <TableHead>Status</TableHead>
-                      <TableHead className="w-10" />
+                      <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
 
                   <TableBody>
                     {filteredStudents.map((student) => (
                       <TableRow key={student.id}>
+                        {/* Student */}
                         <TableCell>
                           <div>
                             <div className="font-medium">{student.name}</div>
+
                             <div className="text-sm text-muted-foreground">
                               {student.email}
                             </div>
                           </div>
                         </TableCell>
 
-                        <TableCell>{student.phone}</TableCell>
-
+                        {/* Instrument */}
                         <TableCell>{student.instrument}</TableCell>
 
+                        {/* Instructor */}
                         <TableCell>{student.instructor}</TableCell>
 
+                        {/* Status */}
                         <TableCell>
                           <Badge
                             variant={
@@ -150,9 +166,10 @@ export default function StudentsPage() {
                           </Badge>
                         </TableCell>
 
-                        <TableCell>
-                          <Button variant="ghost" size="icon">
-                            <MoreHorizontalIcon />
+                        {/* View Details */}
+                        <TableCell className="text-right" onClick={() => handleViewDetails(student)}>
+                          <Button variant="link" className="h-auto p-0">
+                            View Details
                           </Button>
                         </TableCell>
                       </TableRow>
@@ -162,6 +179,96 @@ export default function StudentsPage() {
               </div>
             </CardContent>
           </Card>
+
+          <Dialog open={showDetails} onOpenChange={setShowDetails}>
+            <DialogContent className="sm:max-w-[500px]">
+              <DialogHeader>
+                <DialogTitle>Student Details</DialogTitle>
+                <DialogDescription>
+                  View the student's personal and enrollment information.
+                </DialogDescription>
+              </DialogHeader>
+
+              {selectedStudent && (
+                <div className="space-y-6">
+                  {/* Personal Information */}
+                  <div>
+                    <h3 className="mb-3 text-sm font-semibold">
+                      Personal Information
+                    </h3>
+
+                    <div className="grid grid-cols-2 gap-4 rounded-lg border p-4">
+                      <div>
+                        <p className="text-sm text-muted-foreground">Name</p>
+                        <p className="font-medium">{selectedStudent.name}</p>
+                      </div>
+
+                      <div>
+                        <p className="text-sm text-muted-foreground">Phone</p>
+                        <p className="font-medium">{selectedStudent.phone}</p>
+                      </div>
+
+                      <div className="col-span-2">
+                        <p className="text-sm text-muted-foreground">Email</p>
+                        <p className="font-medium">{selectedStudent.email}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Enrollment Information */}
+                  <div>
+                    <h3 className="mb-3 text-sm font-semibold">
+                      Enrollment Information
+                    </h3>
+
+                    <div className="grid grid-cols-2 gap-4 rounded-lg border p-4">
+                      <div>
+                        <p className="text-sm text-muted-foreground">
+                          Instrument
+                        </p>
+                        <p className="font-medium">
+                          {selectedStudent.instrument}
+                        </p>
+                      </div>
+
+                      <div>
+                        <p className="text-sm text-muted-foreground">
+                          Instructor
+                        </p>
+                        <p className="font-medium">
+                          {selectedStudent.instructor}
+                        </p>
+                      </div>
+
+                      <div>
+                        <p className="text-sm text-muted-foreground">Status</p>
+
+                        <Badge
+                          variant={
+                            selectedStudent.status === "Active"
+                              ? "default"
+                              : "secondary"
+                          }
+                        >
+                          {selectedStudent.status}
+                        </Badge>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Close */}
+                  <div className="flex justify-end">
+                    <Button
+                      variant="outline"
+                      onClick={() => setShowDetails(false)}
+                    >
+                      Close
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </DialogContent>
+          </Dialog>
         </main>
       </SidebarInset>
     </SidebarProvider>

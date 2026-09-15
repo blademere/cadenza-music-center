@@ -103,7 +103,7 @@ const data = {
       icon: <CreditCardIcon />,
     },
     {
-      title: "Enrollment Rates",
+      title: "Enrollment Packages",
       url: "/admin/enrollment-rates",
       icon: <BadgeDollarSignIcon />,
     },

@@ -1,7 +1,7 @@
 "use client";
 
-import { FileIcon, ChevronDown } from "lucide-react";
 import { useState } from "react";
+import { FileIcon, ChevronDown, Check, X } from "lucide-react";
 
 import { AppSidebar } from "../components/app-sidebar";
 import { SiteHeader } from "../components/site-header";
@@ -12,7 +12,6 @@ import {
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-
 import {
   Card,
   CardContent,
@@ -20,6 +19,22 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 import {
   Table,
@@ -30,18 +45,12 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-
-const roomBookings = [
+const initialRoomBookings = [
   {
     id: "RB-001",
     student: "Juan Dela Cruz",
     email: "juan@example.com",
+    phone: "09181234567",
     room: "Practice Room 1",
     date: "Sep 10, 2026",
     startTime: "9:00 AM",
@@ -52,6 +61,7 @@ const roomBookings = [
     id: "RB-002",
     student: "Maria Santos",
     email: "maria@example.com",
+    phone: "09171234567",
     room: "Practice Room 2",
     date: "Sep 11, 2026",
     startTime: "10:00 AM",
@@ -62,6 +72,7 @@ const roomBookings = [
     id: "RB-003",
     student: "Pedro Reyes",
     email: "pedro@example.com",
+    phone: "09191234567",
     room: "Music Room",
     date: "Sep 12, 2026",
     startTime: "1:00 PM",
@@ -72,6 +83,7 @@ const roomBookings = [
     id: "RB-004",
     student: "Ana Garcia",
     email: "ana@example.com",
+    phone: "09181239876",
     room: "Practice Room 3",
     date: "Sep 13, 2026",
     startTime: "2:00 PM",
@@ -81,24 +93,78 @@ const roomBookings = [
 ];
 
 export default function RoomBookingsPage() {
+  const [bookings, setBookings] = useState(initialRoomBookings);
   const [statusFilter, setStatusFilter] = useState("All");
+  const [selectedBooking, setSelectedBooking] = useState(null);
+  const [showDetails, setShowDetails] = useState(false);
 
   const filteredBookings =
     statusFilter === "All"
-      ? roomBookings
-      : roomBookings.filter(
+      ? bookings
+      : bookings.filter(
           (booking) => booking.status === statusFilter
         );
 
+  const handleViewDetails = (booking) => {
+    setSelectedBooking(booking);
+    setShowDetails(true);
+  };
+
+  const handleApprove = () => {
+    if (!selectedBooking) return;
+
+    setBookings((current) =>
+      current.map((booking) =>
+        booking.id === selectedBooking.id
+          ? { ...booking, status: "Approved" }
+          : booking
+      )
+    );
+
+    setSelectedBooking((current) =>
+      current
+        ? { ...current, status: "Approved" }
+        : null
+    );
+  };
+
+  const handleReject = () => {
+    if (!selectedBooking) return;
+
+    setBookings((current) =>
+      current.map((booking) =>
+        booking.id === selectedBooking.id
+          ? { ...booking, status: "Rejected" }
+          : booking
+      )
+    );
+
+    setSelectedBooking((current) =>
+      current
+        ? { ...current, status: "Rejected" }
+        : null
+    );
+  };
+
+  const getStatusVariant = (status) => {
+    if (status === "Approved") return "default";
+    if (status === "Rejected") return "destructive";
+    return "secondary";
+  };
+
   return (
-    <SidebarProvider>
+    <SidebarProvider
+      style={{
+        "--sidebar-width": "calc(var(--spacing) * 72)",
+        "--header-height": "calc(var(--spacing) * 12)",
+      }}
+    >
       <AppSidebar variant="inset" />
 
       <SidebarInset>
         <SiteHeader />
 
         <main className="flex flex-1 flex-col gap-6 p-6">
-          {/* Page Header */}
           <div>
             <h1 className="text-2xl font-semibold">
               Room Bookings
@@ -109,7 +175,6 @@ export default function RoomBookingsPage() {
             </p>
           </div>
 
-          {/* Room Bookings Card */}
           <Card>
             <CardHeader>
               <div className="flex items-center justify-between gap-4">
@@ -121,7 +186,6 @@ export default function RoomBookingsPage() {
                   </CardDescription>
                 </div>
 
-                {/* Status Filter */}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button
@@ -186,12 +250,10 @@ export default function RoomBookingsPage() {
                     {filteredBookings.length > 0 ? (
                       filteredBookings.map((booking) => (
                         <TableRow key={booking.id}>
-                          {/* Booking ID */}
                           <TableCell className="font-medium">
                             {booking.id}
                           </TableCell>
 
-                          {/* Student */}
                           <TableCell>
                             <div>
                               <div className="font-medium">
@@ -204,17 +266,14 @@ export default function RoomBookingsPage() {
                             </div>
                           </TableCell>
 
-                          {/* Room */}
                           <TableCell>
                             {booking.room}
                           </TableCell>
 
-                          {/* Date */}
                           <TableCell>
                             {booking.date}
                           </TableCell>
 
-                          {/* Time */}
                           <TableCell>
                             <div>
                               <div>{booking.startTime}</div>
@@ -225,28 +284,25 @@ export default function RoomBookingsPage() {
                             </div>
                           </TableCell>
 
-                          {/* Status */}
                           <TableCell>
                             <Badge
-                              variant={
-                                booking.status === "Approved"
-                                  ? "default"
-                                  : booking.status === "Rejected"
-                                    ? "destructive"
-                                    : "secondary"
-                              }
+                              variant={getStatusVariant(
+                                booking.status
+                              )}
                             >
                               {booking.status}
                             </Badge>
                           </TableCell>
 
-                          {/* Actions */}
                           <TableCell className="text-right">
                             <Button
                               variant="ghost"
                               size="icon"
                               className="h-8 w-8"
                               title="View booking details"
+                              onClick={() =>
+                                handleViewDetails(booking)
+                              }
                             >
                               <FileIcon className="size-4" />
                             </Button>
@@ -268,6 +324,147 @@ export default function RoomBookingsPage() {
               </div>
             </CardContent>
           </Card>
+
+          <Dialog
+            open={showDetails}
+            onOpenChange={setShowDetails}
+          >
+            <DialogContent className="sm:max-w-[500px]">
+              {selectedBooking && (
+                <>
+                  <DialogHeader>
+                    <div className="flex items-start justify-between gap-4">
+                      <div>
+                        <DialogTitle>
+                          Room Booking
+                        </DialogTitle>
+
+                        <DialogDescription>
+                          {selectedBooking.id} · Booking details
+                        </DialogDescription>
+                      </div>
+
+                      <Badge
+                        variant={getStatusVariant(
+                          selectedBooking.status
+                        )}
+                      >
+                        {selectedBooking.status}
+                      </Badge>
+                    </div>
+                  </DialogHeader>
+
+                  <div className="space-y-4">
+                    <div className="rounded-lg border bg-muted/30 p-4">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <p className="text-xs text-muted-foreground">
+                            Student
+                          </p>
+                          <p className="font-medium">
+                            {selectedBooking.student}
+                          </p>
+                        </div>
+
+                        <div>
+                          <p className="text-xs text-muted-foreground">
+                            Booking ID
+                          </p>
+                          <p className="font-medium">
+                            {selectedBooking.id}
+                          </p>
+                        </div>
+
+                        <div className="col-span-2">
+                          <p className="text-xs text-muted-foreground">
+                            Email
+                          </p>
+                          <p className="truncate font-medium">
+                            {selectedBooking.email}
+                          </p>
+                        </div>
+
+                        <div className="col-span-2">
+                          <p className="text-xs text-muted-foreground">
+                            Phone
+                          </p>
+                          <p className="font-medium">
+                            {selectedBooking.phone}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div>
+                      <h3 className="mb-2 text-sm font-semibold">
+                        Booking Information
+                      </h3>
+
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="rounded-md border p-3">
+                          <p className="text-xs text-muted-foreground">
+                            Room
+                          </p>
+                          <p className="font-medium">
+                            {selectedBooking.room}
+                          </p>
+                        </div>
+
+                        <div className="rounded-md border p-3">
+                          <p className="text-xs text-muted-foreground">
+                            Date
+                          </p>
+                          <p className="font-medium">
+                            {selectedBooking.date}
+                          </p>
+                        </div>
+
+                        <div className="col-span-2 rounded-md border p-3">
+                          <p className="text-xs text-muted-foreground">
+                            Time
+                          </p>
+
+                          <p className="font-medium">
+                            {selectedBooking.startTime}{" "}
+                            <span className="text-muted-foreground">
+                              to
+                            </span>{" "}
+                            {selectedBooking.endTime}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <DialogFooter className="border-t pt-4">
+                    {selectedBooking.status === "Pending" ? (
+                      <>
+                        <Button
+                          variant="outline"
+                          onClick={handleReject}
+                        >
+                          <X className="mr-2 size-4" />
+                          Reject
+                        </Button>
+
+                        <Button onClick={handleApprove}>
+                          <Check className="mr-2 size-4" />
+                          Approve Booking
+                        </Button>
+                      </>
+                    ) : (
+                      <Button
+                        variant="outline"
+                        onClick={() => setShowDetails(false)}
+                      >
+                        Close
+                      </Button>
+                    )}
+                  </DialogFooter>
+                </>
+              )}
+            </DialogContent>
+          </Dialog>
         </main>
       </SidebarInset>
     </SidebarProvider>
